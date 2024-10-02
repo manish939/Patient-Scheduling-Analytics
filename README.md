@@ -95,7 +95,7 @@ The dataset contains several key columns, and their relationships are described 
 
 ## Dashboard Visualizations
 
-![Dashboard Image](path/to/dashboard_image.png)
+![Dashboard Image](https://github.com/manish939/Patient-Scheduling-Analytics/blob/main/Appointment%20Scheduling%20Dashboard%20Image.png)
 
 ---
 
