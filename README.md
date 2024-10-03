@@ -213,13 +213,16 @@ model = keras.Sequential([
     keras.layers.Dense(64, activation='relu'),
     keras.layers.Dense(1)
 ])
-
 # Compiling and training the model
 model.compile(optimizer='adam', loss='mean_squared_error')
-history = model.fit(X_train, y_train, epochs=50, validation_split=0.1, verbose=1)```
-## Making Predictions
+history = model.fit(X_train, y_train, epochs=50, validation_split=0.1, verbose=1)
+```
+
+
+### Making Predictions
 
 Users can manually input a **requesting date** and **provider role**. The model will predict the appointment date based on those inputs.
+
 
 ```python
 def user_input_prediction():
@@ -252,43 +255,46 @@ def user_input_prediction():
     # Calculate the predicted appointment date
     predicted_appointment_date = pd.Timestamp('1970-01-01') + pd.to_timedelta(predicted_appointment_numeric, unit='D')
     print(f"Predicted Appointment Date: {predicted_appointment_date}")
+```
 
+After running the prediction, you will receive the expected appointment date based on the given inputs.
 
+Here is an example of how to interact with the model:
 
-###In this example:
-The neural network model is used to make the predictions.
-The predicted appointment date is calculated based on the number of days since January 1, 1970.
-The post-processing ensures that the predicted appointment date is not before the requesting date.
-Example Output
 If the user inputs:
 
 ```yaml
-Copy code
 Requesting date: 2024-05-26
-Provider role: MD```
-
-#The model might output:
+Provider role: MD
+```
 
 ```yaml
-Copy code
-Predicted Appointment Date: 2024-06-06 05:09:22.500000```
+Predicted Appointment Date: 2024-06-06 05:09:22.500000
+This prediction helps users plan appointments based on historical data trends, making scheduling more efficient.
+```
+
 This indicates that, based on the provided input, the predicted appointment date is June 6, 2024.
 
-###Model Performance
+### Model Performance
 The performance of each model was evaluated based on Mean Absolute Error (MAE), Mean Squared Error (MSE), and R² score. Here’s a comparison of the model performance:
 
 ```yaml
-Copy code
 Linear Regression - MAE: 8.02, MSE: 114.25, R²: 0.48
 Decision Tree - MAE: 8.52, MSE: 121.53, R²: 0.44
 Random Forest - MAE: 8.56, MSE: 126.66, R²: 0.42
 Neural Network - MAE: 79.21, MSE: 6395.07, R²: -28.23
+```
+### Why Use This Feature?
+# This predictive feature is useful for:
 
-Why Use This Feature?
-This predictive feature is useful for:
+`Scheduling Optimization: Administrators and users can estimate waiting times and appointment dates, allowing them to plan more effectively.
+`User Convenience: Instead of relying on past data alone, users can forecast when their appointment is likely to be scheduled.
+`Data-Driven Decision Making: With the predictive feature, users gain additional insights and foresight into future trends, improving their ability to manage appointments.
 
-Scheduling Optimization: Administrators and users can estimate waiting times and appointment dates, allowing them to plan more effectively.
-User Convenience: Instead of relying on past data alone, users can forecast when their appointment is likely to be scheduled.
-Data-Driven Decision Making: With the predictive feature, users gain additional insights and foresight into future trends, improving their ability to manage appointments.
-Conclusion
+### Conclusion
 With the addition of the predictive model, this project not only analyzes past data but also forecasts future appointment dates. This is crucial for helping administrators and users manage appointments more efficiently and plan ahead. The neural network and other machine learning models provide robust predictions, making this feature a powerful tool for scheduling systems.
+
+
+
+
+
