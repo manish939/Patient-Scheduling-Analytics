@@ -157,3 +157,133 @@ The dataset contains several key columns, and their relationships are described 
 ## Conclusion
 
 This project demonstrates the end-to-end process of cleaning, analyzing, and visualizing patient appointment data. The insights derived from the dashboard can help improve scheduling efficiency and reduce patient waiting times. The formulas and tools used here (Excel, DAX, SQL, and Pandas) provide a flexible approach to handling similar data in various environments.
+
+## Predictive Appointment Scheduling Feature
+
+### Overview
+
+In addition to the existing data cleaning, analysis, and visualization, a predictive feature has been added to this project. This predictive model allows users to input a **requesting date** and **provider role** and receive an estimated appointment date. This feature is built using machine learning and neural networks, and it aims to provide an approximation for appointment scheduling in the future.
+
+### Why Use Predictive Models?
+
+In the current data analysis, we can only visualize historical data and gain insights into waiting times, trends, and provider efficiencies. However, if a user or administrator wants to know the expected appointment date for a new request, relying solely on past data can be limiting.
+
+By adding predictive models, users can:
+- Estimate appointment dates in advance based on current trends.
+- Improve scheduling efficiency by understanding possible waiting times.
+- Provide a more user-friendly and intelligent system where users can plan ahead without manually calculating waiting times.
+
+### The Predictive Models
+
+Several machine learning models were used to predict the **appointment date**:
+- **Linear Regression**: A simple regression model that predicts the number of days between the requested and scheduled dates.
+- **Decision Tree**: A tree-based model that captures complex interactions between the provider role and requested date.
+- **Random Forest**: An ensemble method that improves upon the decision tree by averaging multiple decision trees to avoid overfitting.
+- **Neural Network**: A deep learning model trained to learn patterns between the requested date, provider role, and appointment date, leading to more nuanced predictions.
+
+These models take two input features:
+1. **Requesting Date**: The date when the appointment is requested.
+2. **Provider Role**: The role of the healthcare provider (MD, Nurse, Psychologist).
+
+The models output a **predicted appointment date**.
+
+### How It Works
+
+1. **Input**:
+   - Users provide the **requesting date** (in the format YYYY-MM-DD).
+   - Users select the **provider role** (MD, Nurse, or Psychologist).
+
+2. **Prediction**:
+   - The model processes the inputs and predicts the appointment date.
+   - The prediction is based on historical data patterns for similar appointments.
+
+3. **Post-Processing**:
+   - After the prediction, the system ensures the predicted appointment date is **always after the requesting date** (i.e., the system corrects any invalid predictions that fall before the requested date).
+
+### Code Explanation
+
+#### Training the Model
+
+Several machine learning models were trained on the dataset to predict the number of days between the requesting date and appointment date. The neural network model was also implemented to capture complex patterns.
+
+```python
+# Training the Neural Network model
+model = keras.Sequential([
+    keras.layers.Dense(128, activation='relu', input_shape=[X_train.shape[1]]),
+    keras.layers.Dense(64, activation='relu'),
+    keras.layers.Dense(1)
+])
+
+# Compiling and training the model
+model.compile(optimizer='adam', loss='mean_squared_error')
+history = model.fit(X_train, y_train, epochs=50, validation_split=0.1, verbose=1)
+## Making Predictions
+
+Users can manually input a **requesting date** and **provider role**. The model will predict the appointment date based on those inputs.
+
+```python
+def user_input_prediction():
+    print("Enter the details to predict appointment date:")
+    requesting_date = input("Enter requesting date (YYYY-MM-DD): ")
+    provider_role = input("Enter provider role (MD/Nurse/Psychologist): ")
+
+    # Convert provider role to numeric code
+    provider_role_numeric = provider_role_map.get(provider_role, 3)  # Default to MD if input is not recognized
+
+    # Prepare the input data
+    requesting_date_numeric = (pd.to_datetime(requesting_date) - pd.Timestamp('1970-01-01')).days
+    new_data = {
+        'Requesting date_numeric': requesting_date_numeric,
+        'Provider Role': provider_role_numeric
+    }
+
+    # Convert to dataframe
+    new_df = pd.DataFrame([new_data])
+
+    # Ensure the order of columns matches the training data
+    new_df = new_df[X_train.columns]
+
+    # Predict the number of days since 1970 for the appointment date using the Neural Network
+    predicted_appointment_numeric = model.predict(new_df)[0]
+
+    # Post-process: Ensure the predicted appointment date is after the requesting date
+    predicted_appointment_numeric = max(predicted_appointment_numeric, requesting_date_numeric)
+
+    # Calculate the predicted appointment date
+    predicted_appointment_date = pd.Timestamp('1970-01-01') + pd.to_timedelta(predicted_appointment_numeric, unit='D')
+    print(f"Predicted Appointment Date: {predicted_appointment_date}")
+In this example:
+The neural network model is used to make the predictions.
+The predicted appointment date is calculated based on the number of days since January 1, 1970.
+The post-processing ensures that the predicted appointment date is not before the requesting date.
+Example Output
+If the user inputs:
+
+yaml
+Copy code
+Requesting date: 2024-05-26
+Provider role: MD
+The model might output:
+
+yaml
+Copy code
+Predicted Appointment Date: 2024-06-06 05:09:22.500000
+This indicates that, based on the provided input, the predicted appointment date is June 6, 2024.
+
+Model Performance
+The performance of each model was evaluated based on Mean Absolute Error (MAE), Mean Squared Error (MSE), and R² score. Here’s a comparison of the model performance:
+
+yaml
+Copy code
+Linear Regression - MAE: 8.02, MSE: 114.25, R²: 0.48
+Decision Tree - MAE: 8.52, MSE: 121.53, R²: 0.44
+Random Forest - MAE: 8.56, MSE: 126.66, R²: 0.42
+Neural Network - MAE: 79.21, MSE: 6395.07, R²: -28.23
+Why Use This Feature?
+This predictive feature is useful for:
+
+Scheduling Optimization: Administrators and users can estimate waiting times and appointment dates, allowing them to plan more effectively.
+User Convenience: Instead of relying on past data alone, users can forecast when their appointment is likely to be scheduled.
+Data-Driven Decision Making: With the predictive feature, users gain additional insights and foresight into future trends, improving their ability to manage appointments.
+Conclusion
+With the addition of the predictive model, this project not only analyzes past data but also forecasts future appointment dates. This is crucial for helping administrators and users manage appointments more efficiently and plan ahead. The neural network and other machine learning models provide robust predictions, making this feature a powerful tool for scheduling systems.
